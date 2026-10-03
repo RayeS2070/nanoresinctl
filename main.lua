@@ -1,30 +1,40 @@
+local colors = require("colors")
 local component = require("component")
 local computer = require("computer")
+local coroutine = require("coroutine")
 local event = require("event")
 
-local timer = require("timer")
-
 local const = {
-    kMaxInt = 9223372036854775807,
+    kDuration = 600,
     event = {
         kInterruptedEvent = "interrupted"
     }
 }
 
+local master = {
+    ['Molten Samarium'] = { target = 10e6, priority = 1, color = colors.white },
+    ['Molten Praseodymium'] = { target = 10e6, priority = 3, color = colors.yellow },
+    ['Molten Lanthanum'] = { target = 10e6, priority = 2, color = colors.orange },
+    ['Molten Cerium'] = { target = 10e6, priority = 1, color = colors.magenta },
+}
+
 local me = component.me_controller
 
-local function main()
-
-    local timer = timer.InfinityTimer:Make(0.5, function()
-        print("uptime", computer.uptime())
+local function update()
+    while true do
         for _, fluid in ipairs(me.getFluidsInNetwork()) do
-            print(fluid.label, fluid.size)
+            print(fluid.label, fluid.amount)
         end
-    end)
+        coroutine.yield()
+    end
+end
 
-    while not event.pull(5, const.event.kInterruptedEvent) do end
+local function main()
+    local co = coroutine.create(update)
 
-    timer:Cancel();
+    while (not event.pull(const.kDuration, const.event.kInterruptedEvent)) and coroutine.status(co) ~= 'dead' do
+        coroutine.resume(co)
+    end
 
     return 0
 end
