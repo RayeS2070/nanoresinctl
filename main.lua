@@ -10,7 +10,7 @@ local const = {
     kDuration = 600,
     kThreshold = 0.8,
     event = {
-        kInterruptedEvent = "interrupted"
+        kInterrupted = "interrupted"
     }
 }
 
@@ -130,7 +130,7 @@ local function main()
     local errorfree = coroutine.resume(co)
     if const.kDebug then print("E: ", errorfree) end
 
-    while (not event.pull(const.kDuration, const.event.kInterruptedEvent)) and coroutine.status(co) ~= 'dead' do
+    while (not event.pull(const.kDuration, const.event.kInterrupted)) and coroutine.status(co) ~= 'dead' do
         errorfree = coroutine.resume(co)
         if const.kDebug then print("E: ", errorfree) end
     end
