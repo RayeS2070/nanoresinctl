@@ -2,7 +2,8 @@ local colors = require("colors")
 local component = require("component")
 local coroutine = require("coroutine")
 local event = require("event")
-local sides = require("sides")
+-- local sides = require("sides")
+local term = require('term')
 
 local const = {
     kDebug = false,
@@ -10,14 +11,17 @@ local const = {
     kThreshold = 0.8,
     event = {
         kInterrupted = "interrupted"
-    }
+    },
+    kBundledOff = 0,
+    kBundledOn = 255
 }
 
 local master = {
-    ['Molten Samarium'] = { target = 10e6, priority = 1, amount = 0, color = colors.white },
-    ['Molten Praseodymium'] = { target = 10e6, priority = 3, amount = 0, color = colors.yellow },
-    ['Molten Lanthanum'] = { target = 10e6, priority = 2, amount = 0, color = colors.orange },
-    ['Molten Cerium'] = { target = 10e6, priority = 1, amount = 0, color = colors.magenta },
+    ['Molten Samarium'] = { target = 10e8, priority = 1, amount = 0, color = colors.white },
+    ['Molten Lanthanum'] = { target = 10e8, priority = 2, amount = 0, color = colors.orange },
+    ['Molten Cerium'] = { target = 10e8, priority = 1, amount = 0, color = colors.magenta },
+    ['Molten Praseodymium'] = { target = 10e8, priority = 2, amount = 0, color = colors.lightblue },
+    ['Molten Lutetium'] = { target = 10e8, priority = 1, amount = 0, color = colors.yellow },
 }
 
 local me = component.me_controller
@@ -48,6 +52,7 @@ local function get_low_level_fluids()
 end
 
 local function print_dashboard()
+    term.crear()
     if const.kDebug then print("print_dashboard") end
     print("Prettify me")
     for name, fluid in pairs(master) do
@@ -56,11 +61,16 @@ local function print_dashboard()
 end
 
 local function set_redstone(color)
-    for i = 0, 15, 1 do
-        rs.setBundledOutput(sides.front, i, 0)
+    -- for each sides
+    for side = 0, 5, 1 do
+        -- clear each bundled output
+        for i = 0, 15, 1 do
+            rs.setBundledOutput(side, i, const.kBundledOff)
+        end
+        rs.setBundledOutput(side, color, const.kBundledOn)
     end
+
     if const.kDebug then print("Selected color: ", colors[color]) end
-    rs.setBundledOutput(sides.front, color, 255)
 end
 
 local function update_by_amount(low_fluids)
@@ -71,8 +81,6 @@ local function update_by_amount(low_fluids)
     end)
 
     local fluid = low_fluids[#low_fluids]
-
-    if const.kDebug then print("selected color: ", fluid.color) end
 
     if fluid ~= nil then
         set_redstone(fluid.color)
@@ -117,6 +125,7 @@ local function update()
                 return
             end
 
+            print("fallback selection")
             local color = coroutine.resume(generator)
             set_redstone(color)
         end
