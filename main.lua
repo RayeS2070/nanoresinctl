@@ -17,11 +17,12 @@ local const = {
 }
 
 local master = {
-    ['Molten Samarium'] = { target = 10e8, priority = 1, amount = 0, color = colors.white },
-    ['Molten Lanthanum'] = { target = 10e8, priority = 2, amount = 0, color = colors.orange },
-    ['Molten Cerium'] = { target = 10e8, priority = 1, amount = 0, color = colors.magenta },
-    ['Molten Praseodymium'] = { target = 10e8, priority = 2, amount = 0, color = colors.lightblue },
-    ['Molten Lutetium'] = { target = 10e8, priority = 1, amount = 0, color = colors.yellow },
+    ['Molten Samarium'] = { target = 10e11, priority = 1, amount = 0, color = colors.white },
+    ['Molten Lanthanum'] = { target = 10e11, priority = 2, amount = 0, color = colors.orange },
+    ['Molten Cerium'] = { target = 10e11, priority = 1, amount = 0, color = colors.magenta },
+    ['Molten Praseodymium'] = { target = 10e11, priority = 2, amount = 0, color = colors.lightblue },
+    ['Molten Lutetium'] = { target = 10e11, priority = 1, amount = 0, color = colors.yellow },
+    ['Molten Holmium'] = { target = 10e11, priority = 1, amount = 0, color = colors.lime },
 }
 
 local me = component.me_controller
@@ -117,7 +118,7 @@ local function update()
 
     while true do
         update_fluids()
-        print_dashboard()
+        -- print_dashboard()
         local low_fluids = get_low_level_fluids()
         if not update_by_amount(low_fluids) then
             if coroutine.status(generator) == "dead" then
@@ -126,7 +127,7 @@ local function update()
             end
 
             print("fallback selection")
-            local color = coroutine.resume(generator)
+            local _, color = coroutine.resume(generator)
             set_redstone(color)
         end
         coroutine.yield()
