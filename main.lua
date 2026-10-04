@@ -64,7 +64,7 @@ local function set_redstone(color)
     rs.setBundledOutput(sides.front, color, 255)
 end
 
-local function update_redstone(low_fluids)
+local function update_by_amount(low_fluids)
     if const.kDebug then print("update_redstone") end
 
     table.sort(low_fluids, function(a, b)
@@ -112,7 +112,12 @@ local function update()
         update_fluids()
         print_dashboard()
         local low_fluids = get_low_level_fluids()
-        if not update_redstone(low_fluids) then
+        if not update_by_amount(low_fluids) then
+            if coroutine.status(loop) == "dead" then
+                print("loop_iterate is dead. early return")
+                return
+            end
+
             local color = coroutine.resume(loop)
             set_redstone(color)
         end
