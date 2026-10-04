@@ -106,19 +106,19 @@ local function loop_iterate()
 end
 
 local function update()
-    local loop = coroutine.create(loop_iterate)
+    local generator = coroutine.create(loop_iterate)
 
     while true do
         update_fluids()
         print_dashboard()
         local low_fluids = get_low_level_fluids()
         if not update_by_amount(low_fluids) then
-            if coroutine.status(loop) == "dead" then
+            if coroutine.status(generator) == "dead" then
                 print("loop_iterate is dead. early return")
                 return
             end
 
-            local color = coroutine.resume(loop)
+            local color = coroutine.resume(generator)
             set_redstone(color)
         end
         coroutine.yield()
