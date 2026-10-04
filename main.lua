@@ -1,6 +1,5 @@
 local colors = require("colors")
 local component = require("component")
-local computer = require("computer")
 local coroutine = require("coroutine")
 local event = require("event")
 local sides = require("sides")
