@@ -60,6 +60,7 @@ local function set_redstone(color)
     for i = 0, 15, 1 do
         rs.setBundledOutput(sides.front, i, 0)
     end
+    if const.kDebug then print("Selected color: ", colors[color]) end
     rs.setBundledOutput(sides.front, color, 255)
 end
 
